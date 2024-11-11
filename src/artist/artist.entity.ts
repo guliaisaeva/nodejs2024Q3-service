@@ -22,7 +22,7 @@ export class Artist implements TArtist {
   @IsBoolean()
   grammy: boolean;
 
-  constructor(name: string, grammy: false) {
+  constructor(name: string, grammy: boolean) {
     this.id = uuidv4();
     this.name = name;
     this.grammy = grammy;
