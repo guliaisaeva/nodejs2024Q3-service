@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Exclude } from 'class-transformer';
 import { IsInt, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
-import { TUser } from 'src/models/user';
+import { TUser } from 'src/models/models';
 
 export class User implements TUser {
   @IsUUID(4, { each: true })

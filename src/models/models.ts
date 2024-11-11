@@ -6,3 +6,9 @@ export interface TUser {
   createdAt: number;
   updatedAt: number;
 }
+
+export interface TArtist {
+  id: string; // uuid v4
+  name: string;
+  grammy: boolean;
+}
