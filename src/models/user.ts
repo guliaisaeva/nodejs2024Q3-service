@@ -1,6 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
-
-export interface User {
+export interface TUser {
   id: string;
   login: string;
   password: string;
@@ -8,15 +6,3 @@ export interface User {
   createdAt: number;
   updatedAt: number;
 }
-
-export const createUser = (login: string, password: string): User => {
-  const timestamp = Date.now();
-  return {
-    id: uuidv4(),
-    login,
-    password,
-    version: 1,
-    createdAt: timestamp,
-    updatedAt: timestamp,
-  };
-};

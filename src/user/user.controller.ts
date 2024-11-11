@@ -2,49 +2,54 @@ import {
   Controller,
   Get,
   Post,
-  Put,
-  Delete,
-  Param,
   Body,
+  Put,
+  Param,
+  Delete,
   HttpCode,
-  HttpStatus,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { User } from './user.entity';
+import { UsersService } from './user.service';
 import { CreateUserDto } from './dto/create.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UUIDvalidate } from './pipe/user.UUID';
+import { UpdateUserDto } from './dto/update-password.dto';
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post()
+  @HttpCode(201)
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
+  }
 
   @Get()
-  getAllUsers(): User[] {
-    return this.userService.getAllUsers();
+  @HttpCode(200)
+  findAllUsers() {
+    return this.usersService.findAllUsers();
   }
 
   @Get(':id')
-  getUserById(@Param('id') id: string): User {
-    return this.userService.getUserById(id);
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  createUser(@Body() createUserDto: CreateUserDto): User {
-    return this.userService.createUser(createUserDto);
+  @HttpCode(200)
+  findUserById(@Param('id', UUIDvalidate) id: string) {
+    return this.usersService.findUserById(id);
   }
 
   @Put(':id')
-  updatePassword(
-    @Param('id') id: string,
-    @Body() updatePasswordDto: UpdatePasswordDto,
-  ): User {
-    return this.userService.updatePassword(id, updatePasswordDto);
+  @HttpCode(200)
+  updateUser(
+    @Param('id', UUIDvalidate) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.updateUser(id, updateUserDto);
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  deleteUser(@Param('id') id: string): void {
-    this.userService.deleteUser(id);
+  @HttpCode(204)
+  removeUser(@Param('id', UUIDvalidate) id: string) {
+    return this.usersService.removeUser(id);
   }
 }

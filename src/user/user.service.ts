@@ -1,56 +1,58 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  ForbiddenException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { User } from './user.entity';
 import { CreateUserDto } from './dto/create.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateUserDto } from './dto/update-password.dto';
+import { User } from './user.entity';
+
+export const users: User[] = [];
 
 @Injectable()
-export class UserService {
-  private users: User[] = [];
-
-  getAllUsers(): User[] {
-    return this.users;
-  }
-
-  getUserById(id: string): User {
-    return this.users.find((user) => user.id === id);
-  }
-
-  createUser(createUserDto: CreateUserDto): User {
-    const newUser = {
-      id: uuidv4(),
-      ...createUserDto,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    this.users.push(newUser);
-    return newUser;
-  }
-
-  updatePassword(id: string, updatePasswordDto: UpdatePasswordDto): User {
-    const user = this.getUserById(id);
-    if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
-    }
-
-    if (user.password !== updatePasswordDto.oldPassword) {
-      throw new ForbiddenException('Old password is incorrect');
-    }
-
-    user.password = updatePasswordDto.newPassword;
-    user.updatedAt = new Date().toISOString();
+export class UsersService {
+  createUser(createUserDto: CreateUserDto) {
+    const user = new User(createUserDto.login, createUserDto.password);
+    users.push(user);
     return user;
   }
 
-  deleteUser(id: string): void {
-    const userIndex = this.users.findIndex((user) => user.id === id);
-    if (userIndex === -1) {
-      throw new NotFoundException(`User with id ${id} not found`);
+  findAllUsers() {
+    return users;
+  }
+
+  findUserById(id: string) {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException();
     }
-    this.users.splice(userIndex, 1);
+    return user;
+  }
+
+  updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = users.find((user) => user.id === id);
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    if (user.password !== updateUserDto.oldPassword) {
+      throw new ForbiddenException();
+    }
+
+    user.password = updateUserDto.newPassword;
+    user.updatedAt = Date.now();
+    user.version++;
+
+    return user;
+  }
+
+  removeUser(id: string) {
+    const index = users.findIndex((user) => user.id === id);
+    if (index == -1) {
+      throw new NotFoundException();
+    }
+    users.splice(index, 1);
+
+    return users;
   }
 }
