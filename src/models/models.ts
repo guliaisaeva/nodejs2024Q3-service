@@ -20,3 +20,16 @@ export interface TTrack {
   albumId: string | null; // refers to Album
   duration: number;
 }
+
+export interface TAlbum {
+  id: string; // uuid v4
+  name: string;
+  year: number;
+  artistId: string | null; // refers to Artist
+}
+
+export interface TFavorites {
+  artists: string[]; // favorite artists ids
+  albums: string[]; // favorite albums ids
+  tracks: string[]; // favorite tracks ids
+}
