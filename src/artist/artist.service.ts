@@ -4,6 +4,9 @@ import { TArtist } from 'src/models/models';
 import { CreateArtistDto } from './dto/create.dto';
 import { Artist } from './artist.entity';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { tracks } from 'src/track/track.service';
+import { albums } from 'src/album/album.service';
+import { favorites } from 'src/favorites/favorites.service';
 
 export const artists: TArtist[] = [];
 
@@ -49,6 +52,19 @@ export class ArtistService {
       throw new NotFoundException();
     }
     artists.splice(index, 1);
+
+    const artistOfTracks = tracks.filter((track) => (track.artistId = id));
+    artistOfTracks.forEach((track) => {
+      track.artistId = null;
+    });
+
+    const artistOfAlbums = albums.filter((album) => (album.artistId = id));
+    artistOfAlbums.forEach((album) => {
+      album.artistId = null;
+    });
+
+    const favoviteAlbum = favorites.albums.findIndex((album) => album === id);
+    favorites.albums.splice(favoviteAlbum, 1);
 
     return artists;
   }

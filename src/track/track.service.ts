@@ -3,6 +3,7 @@ import { CreateTrackDto } from './dto/create.dto';
 import { TTrack } from 'src/models/models';
 import { Track } from './track.entity';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { favorites } from 'src/favorites/favorites.service';
 
 export const tracks: TTrack[] = [];
 
@@ -46,6 +47,8 @@ export class TrackService {
       throw new NotFoundException();
     }
     tracks.splice(index, 1);
+    const favoriteTrack = favorites.tracks.findIndex((track) => track === id);
+    favorites.tracks.splice(favoriteTrack, 1);
 
     return tracks;
   }
