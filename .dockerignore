@@ -14,3 +14,5 @@ Dockerfile*
 docker-compose*
 
 test/
+doc
+README.md
