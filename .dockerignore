@@ -2,4 +2,15 @@ node_modules
 npm-debug.log
 .env.example
 .git
+.gitignore
 dist
+*.log
+
+.eslintrc.js
+.prettierrc*
+
+.dockerignore
+Dockerfile*
+docker-compose*
+
+test/
