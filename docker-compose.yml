@@ -1,38 +1,63 @@
+# version: '3.8'
+
 services:
-  db:
-    image: postgres:17.1-alpine
-    container_name: library_db
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+  database:
+    image: postgres:14
+    build:
+      context: .
+      dockerfile: ./postgre-sql-db/Dockerfile
+    restart: always
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - db_data:/var/lib/postgresql/data
-    restart: unless-stopped
+      - pgdata:/var/lib/postgresql/data
     networks:
-      - library-network
+      - app-network
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'pg_isready',
+          '-U',
+          '${POSTGRES_USER}',
+          '-d',
+          '${POSTGRES_DB}',
+          '-h',
+          'database',
+          '-p',
+          '${POSTGRES_PORT}',
+        ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
 
   app:
     build:
       context: .
-    container_name: library_app
+      dockerfile: ./Dockerfile
+    restart: always
     ports:
-      - '4000:4000'
+      - '5432:5432'
+    env_file:
+      - .env
     depends_on:
-      - db
-    environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - database
     volumes:
-      - ./src:/usr/src/app/src
-    restart: unless-stopped
+      - .:/app
+      - /app/node_modules
     networks:
-      - library-network
+      - app-network
 
 volumes:
-  db_data:
+  pgdata: {}
 
 networks:
-  library-network:
+  app-network:
     driver: bridge
