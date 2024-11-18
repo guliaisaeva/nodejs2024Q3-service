@@ -56,6 +56,13 @@ npm run docker:stop      # Stop the Docker containers
 npm run docker:restart   # Restart the Docker containers
 ```
 
+To start the prisma studio:
+
+```
+npx prisma studio
+
+```
+
 ## Testing
 
 After application running open new terminal and enter:
