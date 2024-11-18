@@ -5,7 +5,7 @@ services:
     image: postgres:14
     build:
       context: .
-      dockerfile: ./postgre-sql-db/Dockerfile
+      dockerfile: ./postgre-db/Dockerfile
     restart: always
     ports:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
@@ -17,6 +17,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - pglogs:/var/log/postgresql
+
     networks:
       - app-network
     healthcheck:
@@ -50,8 +52,8 @@ services:
     depends_on:
       - database
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./src:/usr/app/src
+        - /app/node_modules
     networks:
       - app-network
 
