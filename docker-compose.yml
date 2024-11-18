@@ -18,22 +18,13 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - pglogs:/var/log/postgresql
-
     networks:
       - app-network
     healthcheck:
       test:
         [
-          'CMD',
-          'pg_isready',
-          '-U',
-          '${POSTGRES_USER}',
-          '-d',
-          '${POSTGRES_DB}',
-          '-h',
-          'database',
-          '-p',
-          '${POSTGRES_PORT}',
+          'CMD-SHELL',
+          'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h database -p ${POSTGRES_PORT}',
         ]
       interval: 10s
       retries: 5
@@ -46,19 +37,20 @@ services:
       dockerfile: ./Dockerfile
     restart: always
     ports:
- - '${PORT}:${PORT}'
-     env_file:
+      - '${PORT}:${PORT}'
+    env_file:
       - .env
     depends_on:
       - database
     volumes:
       - ./src:/usr/app/src
-        - /app/node_modules
+      - /app/node_modules
     networks:
       - app-network
 
 volumes:
   pgdata: {}
+  pglogs: {}
 
 networks:
   app-network:
